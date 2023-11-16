@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
         puntuacionTxt = findViewById(R.id.puntuacion);
 
         iniciarPartida();
+        pintarBotones();
 
         reset = findViewById(R.id.reset);
         reset.setOnClickListener(new View.OnClickListener() {
@@ -49,7 +50,6 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
                 iniciarPartida();
             }
         });
-
 
         gestureDetector = new GestureDetectorCompat(this, this);
     }
@@ -85,6 +85,53 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
             }
         }
         puntuacionTxt.setText("Puntuación: "+puntuacion);
+    }
+
+    public void pintarBotones(){
+        for (int i = 0; i < DIMENSION_I; i++) {
+            for (int j = 0; j < DIMENSION_J; j++) {
+                int color = 0;
+                switch(tablero[i][j].getEstado()){
+                    case COLOR_0:
+                        color = getColor(R.color.color_0);
+                        break;
+                    case COLOR_2:
+                        color = getColor(R.color.color_2);
+                        break;
+                    case COLOR_4:
+                        color = getColor(R.color.color_4);
+                        break;
+                    case COLOR_8:
+                        color = getColor(R.color.color_8);
+                        break;
+                    case COLOR_16:
+                        color = getColor(R.color.color_16);
+                        break;
+                    case COLOR_32:
+                        color = getColor(R.color.color_32);
+                        break;
+                    case COLOR_64:
+                        color = getColor(R.color.color_64);
+                        break;
+                    case COLOR_128:
+                        color = getColor(R.color.color_128);
+                        break;
+                    case COLOR_256:
+                        color = getColor(R.color.color_256);
+                        break;
+                    case COLOR_512:
+                        color = getColor(R.color.color_512);
+                        break;
+                    case COLOR_1024:
+                        color = getColor(R.color.color_1024);
+                        break;
+                    case COLOR_2048:
+                        color = getColor(R.color.color_2048);
+                        break;
+                }
+                buttons[i][j].setBackgroundColor(color);
+            }
+        }
     }
 
     @Override
@@ -199,6 +246,7 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
             tablero[posicion[0]][posicion[1]].setOcupada(true);
             buttons[posicion[0]][posicion[1]].setText(tablero[posicion[0]][posicion[1]].getValor()+"");
         }
+        pintarBotones();
         generarNuevo();
         getPuntuacionMasAlta();
         return true;

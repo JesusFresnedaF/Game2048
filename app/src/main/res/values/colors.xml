@@ -4,5 +4,17 @@
     <color name="color_boton">#CCAAAA</color>
     <color name="fondo">#FFA59D9D</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="color_0">#FFF5E1</color>
+    <color name="color_2">#FFE5B4</color>
+    <color name="color_4">#FFD68E</color>
+    <color name="color_8">#FFC268</color>
+    <color name="color_16">#FFAB42</color>
+    <color name="color_32">#FF9500</color>
+    <color name="color_64">#E08100</color>
+    <color name="color_128">#C16D00</color>
+    <color name="color_256">#A25900</color>
+    <color name="color_512">#844500</color>
+    <color name="color_1024">#663300</color>
+    <color name="color_2048">#472200</color>
     <color name="marron_claro">#F5F5DC</color>
 </resources>

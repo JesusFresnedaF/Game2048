@@ -6,10 +6,12 @@ import java.util.Random;
 
 public class Casilla {
     private int valor;
+    private ColoresFondo estado;
     private boolean ocupada;
     private int bgColor;
     public Casilla(){
         this.valor = 0;
+        this.estado = ColoresFondo.COLOR_0;
         this.ocupada = false;
         this.bgColor = Color.rgb(191, 191, 191);
     }
@@ -29,7 +31,7 @@ public class Casilla {
     public void setOcupada(boolean ocupada) {
         if(ocupada){
             this.valor = 2;
-            this.bgColor = Color.rgb(232, 164, 164);
+            this.estado = ColoresFondo.COLOR_2;
         }else{
             this.valor = 0;
         }
@@ -42,6 +44,14 @@ public class Casilla {
 
     public int getBgColor() {
         return bgColor;
+    }
+
+    public ColoresFondo getEstado() {
+        return estado;
+    }
+
+    public void setEstado(ColoresFondo estado) {
+        this.estado = estado;
     }
 
     public void setBgColor(int bgColor) {
