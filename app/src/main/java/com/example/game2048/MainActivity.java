@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GestureDetectorCompat;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.View;
 import android.widget.Button;
@@ -15,7 +16,7 @@ import android.widget.TextView;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements GestureDetector.OnGestureListener {
+public class MainActivity extends AppCompatActivity{
 
     Button buttons[][];
 
@@ -40,7 +41,6 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
         puntuacionTxt = findViewById(R.id.puntuacion);
 
         iniciarPartida();
-        pintarBotones();
 
         reset = findViewById(R.id.reset);
         reset.setOnClickListener(new View.OnClickListener() {
@@ -51,7 +51,130 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
             }
         });
 
-        gestureDetector = new GestureDetectorCompat(this, this);
+        fondo.setOnTouchListener(new View.OnTouchListener() {
+            private static final int MIN_DISTANCE = 100;
+            private float startX, startY;
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                ArrayList<Integer[]> posiciones = new ArrayList<>();
+
+                //busco todos los botones cuyo valor sea distinto de 0 y los guardo en un array list de Integer[].
+                //posiciones contiene arrays de tamaño 2 que tiene en posiciones[0] la posición i y en posiciones[1] la posicion j
+                //donde está el valor distinto a 0
+                for (int i = 0; i < DIMENSION_I; i++) {
+                    for (int j = 0; j < DIMENSION_J; j++) {
+                        if (!buttons[i][j].getText().equals("0")) {
+                            Integer pos[] = new Integer[2];
+                            pos[0] = i;
+                            pos[1] = j;
+                            posiciones.add(pos);
+                        }
+                    }
+                }
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        generarNuevo();
+                        startX = event.getX();
+                        startY = event.getY();
+                        break;
+                    case MotionEvent.ACTION_UP:
+
+                        float endX = event.getX();
+                        float endY = event.getY();
+
+                        float diffX = endX - startX;
+                        float diffY = endY - startY;
+
+                        for(Integer[] posicion: posiciones){
+                            Log.d("posiciones", posicion[0] + " " +posicion[1]);
+                            int valorInicial = tablero[posicion[0]][posicion[1]].getValor();
+                            tablero[posicion[0]][posicion[1]].setValor(0);
+                            tablero[posicion[0]][posicion[1]].setOcupada(false);
+                            buttons[posicion[0]][posicion[1]].setText(tablero[posicion[0]][posicion[1]].getValor()+"");
+                            if (Math.abs(diffX) > Math.abs(diffY)) {
+                                if (Math.abs(diffX) > MIN_DISTANCE) {
+                                    if (diffX > 0) {
+                                        // Deslizamiento hacia la derecha
+                                        while(posicion[1] < DIMENSION_J - 1){
+                                            posicion[1]++;
+                                        }
+                                        while(tablero[posicion[0]][posicion[1]].isOcupada()){
+                                            if(sumables(valorInicial, tablero[posicion[0]][posicion[1]].getValor())){
+                                                tablero[posicion[0]][posicion[1]].sumar(valorInicial);
+                                                buttons[posicion[0]][posicion[1]].setText(tablero[posicion[0]][posicion[1]].getValor()+"");
+                                            }
+                                            else{
+                                                posicion[1]--;
+                                            }
+                                        }
+                                    } else {
+                                        // Deslizamiento hacia la izquierda
+                                        while(posicion[1] > 0){
+                                            posicion[1]--;
+                                        }
+                                        while(tablero[posicion[0]][posicion[1]].isOcupada()){
+                                            if(sumables(valorInicial, tablero[posicion[0]][posicion[1]].getValor())){
+                                                tablero[posicion[0]][posicion[1]].sumar(valorInicial);
+                                                buttons[posicion[0]][posicion[1]].setText(tablero[posicion[0]][posicion[1]].getValor()+"");
+                                            }
+                                            else{
+                                                posicion[1]++;
+                                            }
+                                        }
+                                    }
+                                }
+                            } else {
+                                if (Math.abs(diffY) > MIN_DISTANCE) {
+                                    if (diffY > 0) {
+                                        // Deslizamiento hacia abajo
+                                        // Tu lógica para mover los botones hacia abajo
+                                        // Deslizamiento hacia abajo
+                                        while(posicion[0] < DIMENSION_I - 1){
+                                            posicion[0]++;
+                                        }
+                                        while(tablero[posicion[0]][posicion[1]].isOcupada()){
+                                            if(sumables(valorInicial, tablero[posicion[0]][posicion[1]].getValor())){
+                                                tablero[posicion[0]][posicion[1]].sumar(valorInicial);
+                                                buttons[posicion[0]][posicion[1]].setText(tablero[posicion[0]][posicion[1]].getValor()+"");
+                                            }
+                                            else{
+                                                posicion[0]--;
+                                            }
+                                        }
+                                    } else {
+                                        // Deslizamiento hacia arriba
+                                        // Tu lógica para mover los botones hacia arriba
+                                        while(posicion[0] > 0){
+                                            posicion[0]--;
+                                        }
+                                        if(!tablero[posicion[0]][posicion[1]].isOcupada()){
+                                            if(sumables(valorInicial, tablero[posicion[0]][posicion[1]].getValor())){
+                                                tablero[posicion[0]][posicion[1]].sumar(valorInicial);
+                                                buttons[posicion[0]][posicion[1]].setText(tablero[posicion[0]][posicion[1]].getValor()+"");
+                                            }
+                                            else{
+                                                posicion[0]--;
+                                            }
+                                        }else{
+
+                                        }
+                                    }
+                                }
+                            }
+                            tablero[posicion[0]][posicion[1]].setValor(2);
+                            buttons[posicion[0]][posicion[1]].setText(tablero[posicion[0]][posicion[1]].getValor()+"");
+                        }
+                        break;
+                }
+                pintarBotones();
+                return true;
+            }
+        });
+    }
+
+    public boolean sumables(int valor1, int valor2){
+        return (valor1 == valor2) && (valor1 != 0);
     }
 
     public void iniciarPartida(){
@@ -69,10 +192,11 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
 
         int inicioI = (int)(Math.random() * DIMENSION_I);
         int inicioJ = (int)(Math.random() * DIMENSION_J);
-        tablero[inicioI][inicioJ].setOcupada(true);
         tablero[inicioI][inicioJ].setValor(2);
+        tablero[inicioI][inicioJ].setOcupada(true);
         buttons[inicioI][inicioJ].setText(tablero[inicioI][inicioJ].getValor()+"");
         getPuntuacionMasAlta();
+        pintarBotones();
     }
 
     public void getPuntuacionMasAlta(){
@@ -91,6 +215,7 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
         for (int i = 0; i < DIMENSION_I; i++) {
             for (int j = 0; j < DIMENSION_J; j++) {
                 int color = 0;
+                tablero[i][j].checkState();
                 switch(tablero[i][j].getEstado()){
                     case COLOR_0:
                         color = getColor(R.color.color_0);
@@ -134,35 +259,6 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
         }
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        this.gestureDetector.onTouchEvent(event);
-        return super.onTouchEvent(event);
-    }
-
-    @Override
-    public boolean onDown(@NonNull MotionEvent e) {
-        return true;
-    }
-
-    @Override
-    public void onShowPress(@NonNull MotionEvent e) {
-    }
-
-    @Override
-    public boolean onSingleTapUp(@NonNull MotionEvent e) {
-        return false;
-    }
-
-    @Override
-    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY){
-        return false;
-    }
-
-    @Override
-    public void onLongPress(@NonNull MotionEvent e) {
-
-    }
 
     public void generarNuevo(){
         int inicioI = (int)(Math.random() * DIMENSION_I);
@@ -173,83 +269,8 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
             inicioJ = (int)(Math.random() * 3);
         }
         tablero[inicioI][inicioJ].setValor(2);
+        tablero[inicioI][inicioJ].setOcupada(true);
         buttons[inicioI][inicioJ].setText(tablero[inicioI][inicioJ].getValor()+"");
-    }
-
-    @Override
-    public boolean onFling(MotionEvent event1, MotionEvent event2, float velocityX, float velocityY) {
-        float diffX = event2.getX() - event1.getX();
-        float diffY = event2.getY() - event1.getY();
-
-        ArrayList<Integer[]> posiciones = new ArrayList<>();
-
-        //busco todos los botones cuyo valor sea distinto de 0 y los guardo en un array list de Integer[].
-        //posiciones contiene arrays de tamaño 2 que tiene en posiciones[0] la posición i y en posiciones[1] la posicion j
-        //donde está el valor distinto a 0
-        for (int i = 0; i < DIMENSION_I; i++) {
-            for (int j = 0; j < DIMENSION_J; j++) {
-                if (!buttons[i][j].getText().equals("0")) {
-                    Integer pos[] = new Integer[2];
-                    pos[0] = i;
-                    pos[1] = j;
-                    posiciones.add(pos);
-                }
-            }
-        }
-
-        //recorro ese arraylist para mover todos los botones que ocupen esas posiciones que guardé antes
-        for(Integer[] posicion:posiciones){
-            tablero[posicion[0]][posicion[1]].setOcupada(false);
-            buttons[posicion[0]][posicion[1]].setText(tablero[posicion[0]][posicion[1]].getValor()+"");
-            int posInitI = posicion[0];
-            int posInitJ = posicion[1];
-            int valorInicial = tablero[posInitI][posInitJ].getValor();
-            if (Math.abs(diffX) > Math.abs(diffY)) {
-                // Deslizamiento horizontal
-                if (diffX > 0) {
-                    // Deslizamiento hacia la derecha
-                    while(posicion[1] < DIMENSION_J - 1){
-                        posicion[1]++;
-                    }
-                    while(tablero[posicion[0]][posicion[1]].isOcupada()){
-                        posicion[1]--;
-                    }
-                } else {
-                    // Deslizamiento hacia la izquierda
-                    while(posicion[1] > 0){
-                        posicion[1]--;
-                    }
-                    while(tablero[posicion[0]][posicion[1]].isOcupada()){
-                        posicion[1]++;
-                    }
-                }
-            } else {
-                // Deslizamiento vertical
-                if (diffY > 0) {
-                    // Deslizamiento hacia abajo
-                    while(posicion[0] < DIMENSION_I - 1){
-                        posicion[0]++;
-                    }
-                    while(tablero[posicion[0]][posicion[1]].isOcupada()){
-                        posicion[0]--;
-                    }
-                } else {
-                    // Deslizamiento hacia arriba
-                    while(posicion[0] > 0){
-                        posicion[0]--;
-                    }
-                    while(tablero[posicion[0]][posicion[1]].isOcupada()){
-                        posicion[0]++;
-                    }
-                }
-            }
-            tablero[posicion[0]][posicion[1]].setOcupada(true);
-            buttons[posicion[0]][posicion[1]].setText(tablero[posicion[0]][posicion[1]].getValor()+"");
-        }
-        pintarBotones();
-        generarNuevo();
-        getPuntuacionMasAlta();
-        return true;
     }
 
     // Implementa otros métodos de la interfaz GestureDetector.OnGestureListener según sea necesario
